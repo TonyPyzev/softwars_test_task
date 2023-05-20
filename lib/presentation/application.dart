@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'navigation/navigation.dart';
+
 class Application extends StatelessWidget {
   final String _title = 'Todoshechka';
 
@@ -10,11 +12,8 @@ class Application extends StatelessWidget {
     return MaterialApp(
       title: _title,
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+      routes: Navigation.routes,
+      initialRoute: Navigation.initialRoute,
     );
   }
 }
