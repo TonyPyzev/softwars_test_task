@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   scaffold_gradient_background: ^1.0.3+1
+  image_picker: ^0.8.7+5
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

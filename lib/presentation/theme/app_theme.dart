@@ -18,4 +18,14 @@ class AppTheme {
       blurRadius: 4,
     ),
   ];
+
+  static ThemeData get theme {
+    return ThemeData().copyWith(
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        color: Colors.transparent,
+        shadowColor: Colors.transparent,
+      ),
+    );
+  }
 }

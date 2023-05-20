@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
 import 'package:softwars_test_task/presentation/theme/app_theme.dart';
 
-import 'components/components.dart';
+import 'components/home_components.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String pageRoute = '/home';
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   itemCount: 50,
                   itemBuilder: (context, index) {
-                    return ToDoCheckTile();
+                    return const ToDoCheckTile();
                   },
                 ),
               ),
