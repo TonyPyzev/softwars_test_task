@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:softwars_test_task/presentation/pages/createTask/create_task_screen.dart';
-import 'package:softwars_test_task/presentation/theme/app_theme.dart';
 
+import '../../createTask/create_task_screen.dart';
+import '../../../theme/app_theme.dart';
 import '../../../constants/app_colors.dart';
 
 class HomeFAB extends StatelessWidget {

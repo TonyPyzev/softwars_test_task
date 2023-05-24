@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:softwars_test_task/presentation/constants/app_colors.dart';
+
+import '../constants/app_colors.dart';
 
 class AppTheme {
   static const LinearGradient scaffoldgradient = LinearGradient(
@@ -21,6 +22,10 @@ class AppTheme {
 
   static ThemeData get theme {
     return ThemeData().copyWith(
+      colorScheme: const ColorScheme.light().copyWith(
+        primary: AppColors.disabled,
+        onPrimary: AppColors.secondaryVariant,
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         color: Colors.transparent,
