@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../domain/entities/task.dart';
@@ -55,12 +58,30 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
       name: name,
       type: state.selectedTaskType,
       description: desc,
-      fileBase64: '',
+      fileBase64: base64Encode(state.imageBytes),
       finishDate: state.pickedDate ?? DateTime.now(),
       isUrgent: state.isUrgent,
       syncTime: DateTime.now(),
     );
 
     return await CreateTask().execute(task);
+  }
+
+  void addImage(XFile image) async {
+    List<int> imageBytes = await image.readAsBytes();
+
+    emit(state.copyWith(
+      imageBytes: imageBytes,
+    ));
+  }
+
+  void deleteImage() {
+    emit(state.copyWith(
+      imageBytes: [],
+    ));
+  }
+
+  void resetState() {
+    emit(const CreateTaskState());
   }
 }

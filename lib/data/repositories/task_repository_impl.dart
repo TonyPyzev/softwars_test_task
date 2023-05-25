@@ -7,7 +7,9 @@ class TaskRepositoryImpl implements TaskRepository {
   late final TaskRemoteDataSource _taskRemoteDataSource;
 
   TaskRepositoryImpl() {
-    _taskRemoteDataSource = TaskRemoteDataSource();
+    _taskRemoteDataSource = TaskRemoteDataSource(
+      url: 'https://to-do.softwars.com.ua/tasks',
+    );
   }
 
   @override
@@ -21,6 +23,19 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<List<Task>> createTask(Task task) async {
     final List<TaskModel> taskModels =
         await _taskRemoteDataSource.createTask(task.toModel());
+
+    return taskModels.map((e) => e.toEntity()).toList();
+  }
+
+  @override
+  Future<List<Task>> updateTask({
+    required String id,
+    required Map<String, dynamic> params,
+  }) async {
+    final List<TaskModel> taskModels = await _taskRemoteDataSource.updateTask(
+      id: id,
+      params: params,
+    );
 
     return taskModels.map((e) => e.toEntity()).toList();
   }

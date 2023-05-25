@@ -13,7 +13,6 @@ class HomeFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TODO add todoshka
         Navigator.of(context).pushNamed(CreateTaskScreen.pageRoute);
       },
       child: Container(

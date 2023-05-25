@@ -5,7 +5,11 @@ import '../../models/task_model.dart';
 
 class TaskRemoteDataSource {
   final client = http.Client();
-  final url = Uri.parse('https://to-do.softwars.com.ua/tasks');
+  late final Uri url;
+
+  TaskRemoteDataSource({required String url}) {
+    this.url = Uri.parse(url);
+  }
 
   Future<List<TaskModel>> fetchTasks() async {
     final responce = await client.get(url);
@@ -17,6 +21,26 @@ class TaskRemoteDataSource {
     final responce = await client.post(
       url,
       body: task.toJson(),
+    );
+
+    return _decodeResponce(responce);
+  }
+
+  Future<List<TaskModel>> updateTask({
+    required String id,
+    required Map<String, dynamic> params,
+  }) async {
+    final responce = await client.put(
+      Uri.parse('https://to-do.softwars.com.ua/tasks/$id'),
+      body: json.encode(params),
+    );
+
+    return _decodeResponce(responce);
+  }
+
+  Future<List<TaskModel>> deleteTask(TaskModel task) async {
+    final responce = await client.delete(
+      Uri.parse('https://to-do.softwars.com.ua/tasks/${task.taskId}'),
     );
 
     return _decodeResponce(responce);

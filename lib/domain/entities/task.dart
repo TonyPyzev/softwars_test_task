@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/models/task_model.dart';
 import 'task_status.dart';
@@ -76,5 +77,40 @@ class Task extends Equatable {
       isUrgent: isUrgent,
       syncTime: syncTime,
     );
+  }
+
+  Map<String, dynamic> fetchTaskDiffParams(Task comparable) {
+    final Map<String, dynamic> params = <String, dynamic>{};
+
+    if (taskId != comparable.taskId) {
+      params['taskId'] = comparable.taskId;
+    }
+    if (status != comparable.status) {
+      params['status'] = TaskStatus.toIntType(comparable.status);
+    }
+    if (name != comparable.name) {
+      params['name'] = comparable.name;
+    }
+    if (type != comparable.type) {
+      params['type'] = TaskType.toIntType(comparable.type);
+    }
+    if (description != comparable.description) {
+      params['description'] = comparable.description;
+    }
+    if (fileBase64 != comparable.fileBase64) {
+      params['file'] = comparable.fileBase64;
+    }
+    if (finishDate != comparable.finishDate) {
+      params['finishDate'] =
+          DateFormat('yyyy-MM-dd').format(comparable.finishDate);
+    }
+    if (isUrgent != comparable.isUrgent) {
+      params['urgent'] = comparable.isUrgent ? 1 : 0;
+    }
+    params['syncDate'] =
+        DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+
+    print(params);
+    return params;
   }
 }

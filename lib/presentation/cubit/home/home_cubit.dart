@@ -1,18 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:softwars_test_task/domain/entities/task_status.dart';
 
 import '../../../domain/entities/task_type.dart';
 import '../../../domain/usecases/fetch_tasks.dart';
 import '../../../domain/entities/task.dart';
+import '../../../domain/usecases/update_task.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(const HomeState());
-
-  void init() {
-    fetchTasks();
-  }
 
   Future<void> fetchTasks() async {
     final List<Task> tasks = await FetchTasks().execute();
@@ -30,6 +28,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void emitTasksFromList(List<Task> tasks) {
+    tasks.sort((a, b) => b.syncTime.compareTo(a.syncTime));
+
     final (List<Task> workTasks, List<Task> personalTasks) =
         _sortByTaskType(tasks);
 
@@ -40,10 +40,26 @@ class HomeCubit extends Cubit<HomeState> {
     ));
   }
 
-  (
-    List<Task> workTasks,
-    List<Task> personalTasks,
-  ) _sortByTaskType(
+  void markAsCompleted(String id) async {
+    final Task task = state.tasks.firstWhere((element) => element.taskId == id);
+
+    final Map<String, dynamic> params = task.fetchTaskDiffParams(
+      task.copyWith(
+        status: task.status == TaskStatus.completed
+            ? TaskStatus.inProgress
+            : TaskStatus.completed,
+      ),
+    );
+
+    List<Task> fetchedTasks = await UpdateTask().execute(
+      id: task.taskId,
+      params: params,
+    );
+
+    emitTasksFromList(fetchedTasks);
+  }
+
+  (List<Task> workTasks, List<Task> personalTasks) _sortByTaskType(
     List<Task> tasks,
   ) {
     return (

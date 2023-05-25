@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
+import 'package:softwars_test_task/presentation/cubit/home/home_cubit.dart';
 
 import '../../constants/app_colors.dart';
 import '../../theme/app_theme.dart';
@@ -16,19 +18,33 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  late bool isLoading;
+
+  @override
+  void initState() {
+    isLoading = false;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldGradientBackground(
       gradient: AppTheme.scaffoldgradient,
       body: Center(
-        child: RoundedButton(
-          title: 'Вхід',
-          width: 140,
-          color: AppColors.primaryVariant,
-          onTap: () {
-            Navigator.of(context).pushNamed(HomeScreen.pageRoute);
-          },
-        ),
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : RoundedButton(
+                title: 'Вхід',
+                width: 140,
+                color: AppColors.primaryVariant,
+                onTap: () {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  context.read<HomeCubit>().fetchTasks().then((value) =>
+                      Navigator.of(context).pushNamed(HomeScreen.pageRoute));
+                },
+              ),
       ),
     );
   }

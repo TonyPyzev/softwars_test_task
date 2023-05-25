@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:softwars_test_task/presentation/cubit/home/home_cubit.dart';
 
 import '../../../../domain/entities/task.dart';
 import '../../../../domain/entities/task_status.dart';
 import '../../../../domain/entities/task_type.dart';
 import '../../../constants/app_colors.dart';
 
-class ToDoCheckTile extends StatelessWidget {
+class ToDoCheckTile extends StatefulWidget {
   final Task task;
 
   const ToDoCheckTile({
     super.key,
     required this.task,
   });
+
+  @override
+  State<ToDoCheckTile> createState() => _ToDoCheckTileState();
+}
+
+class _ToDoCheckTileState extends State<ToDoCheckTile> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +43,15 @@ class ToDoCheckTile extends StatelessWidget {
             bottom: 5,
           ),
           decoration: BoxDecoration(
-            color: task.isUrgent ? AppColors.accentRed : AppColors.primary,
+            color:
+                widget.task.isUrgent ? AppColors.accentRed : AppColors.primary,
             borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(
-                task.type == TaskType.work
+                widget.task.type == TaskType.work
                     ? Icons.work_outline
                     : Icons.home_outlined,
                 color: AppColors.secondaryVariant,
@@ -60,7 +70,7 @@ class ToDoCheckTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              task.name,
+                              widget.task.name,
                               style: const TextStyle(
                                 color: AppColors.secondaryVariant,
                                 fontSize: 16,
@@ -73,7 +83,7 @@ class ToDoCheckTile extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        DateFormat('yyyy.MM.dd').format(task.syncTime),
+                        DateFormat('yyyy.MM.dd').format(widget.task.syncTime),
                         style: const TextStyle(
                           color: AppColors.secondaryVariant,
                           fontSize: 11,
@@ -85,41 +95,48 @@ class ToDoCheckTile extends StatelessWidget {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  //TODO mark task completed
-                },
-                child: task.status == TaskStatus.completed
-                    ? Container(
-                        height: 32,
-                        width: 32,
-                        decoration: BoxDecoration(
-                          color: AppColors.disabled,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: AppColors.secondaryVariant,
-                            width: 1,
+              if (isLoading) const CircularProgressIndicator(),
+              if (!isLoading)
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    context
+                        .read<HomeCubit>()
+                        .markAsCompleted(widget.task.taskId);
+                  },
+                  child: widget.task.status == TaskStatus.completed
+                      ? Container(
+                          height: 32,
+                          width: 32,
+                          decoration: BoxDecoration(
+                            color: AppColors.disabled,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppColors.secondaryVariant,
+                              width: 1,
+                            ),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.check,
+                              color: AppColors.secondaryVariant,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          height: 32,
+                          width: 32,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppColors.secondaryVariant,
+                              width: 1,
+                            ),
                           ),
                         ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.check,
-                            color: AppColors.secondaryVariant,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        height: 32,
-                        width: 32,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: AppColors.secondaryVariant,
-                            width: 1,
-                          ),
-                        ),
-                      ),
-              ),
+                ),
             ],
           ),
         ),

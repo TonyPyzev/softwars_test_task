@@ -34,72 +34,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) {
-        return ScaffoldGradientBackground(
-          gradient: AppTheme.scaffoldgradient,
-          body: SafeArea(
-            child: Column(
-              children: [
-                HomeNavBar(
-                  pageController: _pageController,
-                ),
-                Expanded(
-                  child: PageView(
+    return ScaffoldGradientBackground(
+      gradient: AppTheme.scaffoldgradient,
+      body: SafeArea(
+        child: Column(
+          children: [
+            HomeNavBar(
+              pageController: _pageController,
+            ),
+            Expanded(
+              child: BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return PageView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _pageController,
                     children: [
-                      RefreshIndicator(
-                        onRefresh: () async {
-                          await context.read<HomeCubit>().fetchTasks();
-                        },
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.tasks.length,
-                          itemBuilder: (context, index) {
-                            return ToDoCheckTile(
-                              task: state.tasks[index],
-                            );
-                          },
-                        ),
+                      TaskListView(
+                        tasks: state.tasks,
                       ),
-                      RefreshIndicator(
-                        onRefresh: () async {
-                          await context.read<HomeCubit>().fetchTasks();
-                        },
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.workTasks.length,
-                          itemBuilder: (context, index) {
-                            return ToDoCheckTile(
-                              task: state.workTasks[index],
-                            );
-                          },
-                        ),
+                      TaskListView(
+                        tasks: state.workTasks,
                       ),
-                      RefreshIndicator(
-                        onRefresh: () async {
-                          await context.read<HomeCubit>().fetchTasks();
-                        },
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.personalTasks.length,
-                          itemBuilder: (context, index) {
-                            return ToDoCheckTile(
-                              task: state.personalTasks[index],
-                            );
-                          },
-                        ),
+                      TaskListView(
+                        tasks: state.personalTasks,
                       ),
                     ],
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
-          ),
-          floatingActionButton: const HomeFAB(),
-        );
-      },
+          ],
+        ),
+      ),
+      floatingActionButton: const HomeFAB(),
     );
   }
 }

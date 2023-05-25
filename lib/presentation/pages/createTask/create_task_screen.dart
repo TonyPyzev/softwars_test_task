@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
 
 import '../../constants/app_colors.dart';
@@ -31,6 +34,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   late TextEditingController _dateController;
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -108,17 +113,63 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 horizontalPadding: 34,
                 verticalPadding: 12,
                 child: GestureDetector(
-                  onTap: () {
-                    //TODO attach image
+                  onTap: () async {
+                    final ImagePicker picker = ImagePicker();
+
+                    final XFile? image = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+
+                    if (image != null) {
+                      _cubit.addImage(image);
+                    }
                   },
-                  child: const Text(
-                    'Прикріпити файл',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.secondaryVariant,
-                    ),
-                  ),
+                  child: state.imageBytes.isEmpty
+                      ? const Text(
+                          'Прикріпити файл',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.secondaryVariant,
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Вкладене зображення',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.secondaryVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Image.memory(
+                                    base64Decode(
+                                      base64Encode(state.imageBytes),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 24),
+                                GestureDetector(
+                                  onTap: () {
+                                    _cubit.deleteImage();
+                                  },
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 32,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                 ),
               ),
               FormConatiner(
@@ -152,12 +203,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   ),
                 ),
               ),
-              RoundedButton(
-                title: 'Створити',
-                width: 170,
-                color: AppColors.primaryVariant,
-                onTap: _validateForm,
-              ),
+              if (!isLoading)
+                RoundedButton(
+                  title: 'Створити',
+                  width: 170,
+                  color: AppColors.primaryVariant,
+                  onTap: _validateForm,
+                ),
+              if (isLoading) const CircularProgressIndicator(),
             ],
           ),
         );
@@ -169,6 +222,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     return AppBar(
       leading: GestureDetector(
         onTap: () {
+          context.read<CreateTaskCubit>().resetState();
           Navigator.of(context).pop();
         },
         child: const Icon(
@@ -202,7 +256,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
 
     if (_cubit.state.pickedDate != null) {
       final String formattedDate =
-          DateFormat('dd.MM.yyyy').format(_cubit.state.pickedDate!);
+          'Дата завершення: ${DateFormat('dd.MM.yyyy').format(_cubit.state.pickedDate!)}';
 
       setState(() {
         _dateController.text = formattedDate;
@@ -211,7 +265,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   }
 
   void _initControllers() {
-    _dateController = TextEditingController()..text = 'Дата завершення:';
+    _dateController = TextEditingController()
+      ..text = 'Дата завершення: сьогодні';
     _nameController = TextEditingController();
     _descriptionController = TextEditingController();
   }
@@ -223,6 +278,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   }
 
   Future<void> _createTask() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final homeCubit = context.read<HomeCubit>();
 
     final tasks = await _cubit.createTask(
@@ -252,11 +311,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   void _validateForm() {
     if (_nameController.text.isEmpty) {
       _showSnackBar('Дайте назву завданню');
-    } else if (_dateController.text == 'Дата завершення:') {
-      _showSnackBar('Оберіть дату завершення');
     } else {
-      _createTask();
-      Navigator.of(context).pop();
+      _createTask().then((value) => Navigator.of(context).pop());
+      context.read<CreateTaskCubit>().resetState();
     }
   }
 }
