@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:softwars_test_task/presentation/cubit/home/home_cubit.dart';
 
 import '../../../../domain/entities/task.dart';
 import '../../../../domain/entities/task_status.dart';
 import '../../../../domain/entities/task_type.dart';
 import '../../../constants/app_colors.dart';
+import '../../../cubit/description/description_cubit.dart';
+import '../../../cubit/home/home_cubit.dart';
+import '../../description/create_task_screen.dart';
 
 class ToDoCheckTile extends StatefulWidget {
   final Task task;
@@ -31,7 +33,10 @@ class _ToDoCheckTileState extends State<ToDoCheckTile> {
       ),
       child: GestureDetector(
         onTap: () {
-          //TODO navigate to task description
+          context
+              .read<DescriptionCubit>()
+              .setEditingState(widget.task.copyWith());
+          Navigator.of(context).pushNamed(DescriptionScreen.pageRoute);
         },
         child: Container(
           height: 65,

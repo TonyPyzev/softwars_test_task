@@ -1,0 +1,4 @@
+enum DescriptionScreenStatus {
+  creating,
+  editing,
+}

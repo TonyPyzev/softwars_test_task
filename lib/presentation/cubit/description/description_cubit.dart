@@ -6,15 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../domain/entities/description_screen_status.dart';
 import '../../../domain/entities/task.dart';
 import '../../../domain/entities/task_status.dart';
 import '../../../domain/entities/task_type.dart';
 import '../../../domain/usecases/create_task.dart';
+import '../../../domain/usecases/delete_task.dart';
 
-part 'create_task_state.dart';
+part 'description_state.dart';
 
-class CreateTaskCubit extends Cubit<CreateTaskState> {
-  CreateTaskCubit() : super(const CreateTaskState());
+class DescriptionCubit extends Cubit<DescriptionState> {
+  DescriptionCubit() : super(const DescriptionState());
 
   Future<void> pickDate(BuildContext context) async {
     final pickedDate = await showDatePicker(
@@ -82,6 +84,39 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
   }
 
   void resetState() {
-    emit(const CreateTaskState());
+    emit(const DescriptionState());
+  }
+
+  void setEditingState(Task task) {
+    emit(state.copyWith(
+      status: DescriptionScreenStatus.editing,
+      task: task,
+      selectedTaskType: task.type,
+      isUrgent: task.isUrgent,
+      imageBytes: base64Decode(task.fileBase64),
+    ));
+  }
+
+  Future<List<Task>> updateTask(String name, String desc) async {
+    final Task newTask = state.task!.copyWith(
+      taskId: state.task!.taskId,
+      status: state.task!.status,
+      name: name,
+      type: state.selectedTaskType,
+      description: desc,
+      fileBase64: base64Encode(state.imageBytes),
+      finishDate: state.pickedDate,
+      isUrgent: state.isUrgent,
+      syncTime: DateTime.now(),
+    );
+
+    List<Task> fetchedTasks = await CreateTask().execute(newTask);
+
+    return fetchedTasks;
+  }
+
+  Future<List<Task>> deleteTask() async {
+    List<Task> fetchedTasks = await DeleteTask().execute(state.task!.taskId);
+    return fetchedTasks;
   }
 }

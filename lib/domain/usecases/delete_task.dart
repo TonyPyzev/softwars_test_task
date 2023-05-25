@@ -2,20 +2,14 @@ import '../../data/repositories/task_repository_impl.dart';
 import '../entities/task.dart';
 import '../repositories/task_repository.dart';
 
-class UpdateTask {
+class DeleteTask {
   late final TaskRepository _taskRepository;
 
-  UpdateTask() {
+  DeleteTask() {
     _taskRepository = TaskRepositoryImpl();
   }
 
-  Future<List<Task>> execute({
-    required String id,
-    required Map<String, dynamic> status,
-  }) async {
-    return await _taskRepository.updateTask(
-      id: id,
-      status: status,
-    );
+  Future<List<Task>> execute(String id) async {
+    return await _taskRepository.deleteTask(id);
   }
 }

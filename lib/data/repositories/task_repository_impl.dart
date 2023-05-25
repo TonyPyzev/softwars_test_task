@@ -30,12 +30,20 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<List<Task>> updateTask({
     required String id,
-    required Map<String, dynamic> params,
+    required Map<String, dynamic> status,
   }) async {
     final List<TaskModel> taskModels = await _taskRemoteDataSource.updateTask(
       id: id,
-      params: params,
+      status: status,
     );
+
+    return taskModels.map((e) => e.toEntity()).toList();
+  }
+
+  @override
+  Future<List<Task>> deleteTask(String id) async {
+    final List<TaskModel> taskModels =
+        await _taskRemoteDataSource.deleteTask(id);
 
     return taskModels.map((e) => e.toEntity()).toList();
   }

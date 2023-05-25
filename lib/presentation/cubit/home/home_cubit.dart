@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:softwars_test_task/domain/entities/task_status.dart';
 
+import '../../../domain/entities/task.dart';
+import '../../../domain/entities/task_status.dart';
 import '../../../domain/entities/task_type.dart';
 import '../../../domain/usecases/fetch_tasks.dart';
-import '../../../domain/entities/task.dart';
 import '../../../domain/usecases/update_task.dart';
 
 part 'home_state.dart';
@@ -43,17 +43,15 @@ class HomeCubit extends Cubit<HomeState> {
   void markAsCompleted(String id) async {
     final Task task = state.tasks.firstWhere((element) => element.taskId == id);
 
-    final Map<String, dynamic> params = task.fetchTaskDiffParams(
-      task.copyWith(
-        status: task.status == TaskStatus.completed
-            ? TaskStatus.inProgress
-            : TaskStatus.completed,
-      ),
-    );
-
     List<Task> fetchedTasks = await UpdateTask().execute(
       id: task.taskId,
-      params: params,
+      status: {
+        'status': TaskStatus.toIntType(
+          task.status == TaskStatus.completed
+              ? TaskStatus.inProgress
+              : TaskStatus.completed,
+        )
+      },
     );
 
     emitTasksFromList(fetchedTasks);

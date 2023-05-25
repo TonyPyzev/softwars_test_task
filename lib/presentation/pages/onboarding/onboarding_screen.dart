@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
-import 'package:softwars_test_task/presentation/cubit/home/home_cubit.dart';
 
 import '../../constants/app_colors.dart';
+import '../../cubit/home/home_cubit.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/rounded_button.dart';
 import '../home/home_screen.dart';

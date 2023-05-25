@@ -7,6 +7,8 @@ abstract class TaskRepository {
 
   Future<List<Task>> updateTask({
     required String id,
-    required Map<String, dynamic> params,
+    required Map<String, dynamic> status,
   });
+
+  Future<List<Task>> deleteTask(String id);
 }

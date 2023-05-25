@@ -28,21 +28,20 @@ class TaskRemoteDataSource {
 
   Future<List<TaskModel>> updateTask({
     required String id,
-    required Map<String, dynamic> params,
+    required Map<String, dynamic> status,
   }) async {
     final responce = await client.put(
       Uri.parse('https://to-do.softwars.com.ua/tasks/$id'),
-      body: json.encode(params),
+      body: json.encode(status),
     );
 
     return _decodeResponce(responce);
   }
 
-  Future<List<TaskModel>> deleteTask(TaskModel task) async {
+  Future<List<TaskModel>> deleteTask(String taskId) async {
     final responce = await client.delete(
-      Uri.parse('https://to-do.softwars.com.ua/tasks/${task.taskId}'),
+      Uri.parse('https://to-do.softwars.com.ua/tasks/$taskId'),
     );
-
     return _decodeResponce(responce);
   }
 
